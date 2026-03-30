@@ -1,2 +1,2 @@
 # Baby-Genius
-web app that allow kids to learn and track fundament skill at a young age
+Web app that allows kids to learn and track fundamental skills at a young age
