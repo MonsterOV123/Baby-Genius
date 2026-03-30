@@ -1,32 +1,532 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Baby Genius - Math</title>
-    <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Baby Genius - Math Game</title>
+<style>
+:root { --sky:#9fd9ff; --sun:#ffd84d; --grass:#8be28b; --berry:#ff6b9a; --blue:#2f7ef7; --ink:#22324d; --card:#ffffff; }
+*{box-sizing:border-box}
+body{margin:0;font-family:"Trebuchet MS","Comic Sans MS",sans-serif;background:linear-gradient(160deg,var(--sky),#d6f4ff 45%,#fff8d2 100%);color:var(--ink);min-height:100vh;display:flex;flex-direction:column}
+
+header{background:linear-gradient(90deg,var(--sun),#ffef9a);padding:18px 24px;border-bottom:4px solid #f1bf32;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center}
+.logo{margin:0;font-size:2rem;color:#ff4f84;text-shadow:2px 2px 0 #fff}
+.logo a{color:inherit;text-decoration:none}
+nav ul{list-style:none;display:flex;gap:12px;margin:0;padding:0}
+nav a{text-decoration:none;font-weight:700;padding:10px 16px;border-radius:999px;background-color:var(--blue);color:#fff}
+nav a:hover{background:#1e66d0}
+
+main{flex:1;display:flex;justify-content:center;align-items:center;padding:20px}
+
+.container{background:var(--card);padding:24px;border-radius:20px;border:4px solid #c5efff;box-shadow:0 8px 24px rgba(34,50,77,.1);text-align:center;width:440px;position:relative;overflow:hidden}
+
+select,button{margin:8px 0;padding:10px;border-radius:999px;border:none;font-size:1rem}
+button{background:var(--blue);color:#fff;font-weight:700;cursor:pointer}
+button:hover{background:#1e66d0}
+
+/* Category grid */
+.category-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0}
+.cat-btn{border-radius:14px;padding:12px 8px;font-size:0.92rem;font-weight:700;cursor:pointer;border:3px solid transparent;transition:transform .15s,border-color .15s,background .15s;display:flex;flex-direction:column;align-items:center;gap:4px;background:#f0f8ff;color:var(--ink);margin:0}
+.cat-btn .cat-icon{font-size:1.8rem;line-height:1}
+.cat-btn:hover{transform:scale(1.05);background:#ddeeff}
+.cat-btn[data-cat="addition"]       {background:#fff0f5}
+.cat-btn[data-cat="addition"].selected     {border-color:#ff6b9a;background:#ffe0ec}
+.cat-btn[data-cat="subtraction"]    {background:#fff8e0}
+.cat-btn[data-cat="subtraction"].selected  {border-color:#f0a500;background:#ffedb0}
+.cat-btn[data-cat="multiplication"] {background:#e8f8e8}
+.cat-btn[data-cat="multiplication"].selected{border-color:#3aaa3a;background:#c8f0c8}
+.cat-btn[data-cat="division"]       {background:#f0ecff}
+.cat-btn[data-cat="division"].selected     {border-color:#7b4fff;background:#ddd0ff}
+.cat-btn[data-cat="counting"]       {background:#fff4e0}
+.cat-btn[data-cat="counting"].selected     {border-color:#ff8c00;background:#ffe4b0}
+.cat-btn[data-cat="shapes"]         {background:#e0f7ff}
+.cat-btn[data-cat="shapes"].selected       {border-color:#00aacc;background:#b0eaff}
+.cat-btn[data-cat="missing"]        {background:#fff0ff}
+.cat-btn[data-cat="missing"].selected      {border-color:#cc44cc;background:#f0b0f0}
+.cat-btn[data-cat="compare"]        {background:#e8ffe8}
+.cat-btn[data-cat="compare"].selected      {border-color:#228b22;background:#b8f0b8}
+
+.controls-row{display:flex;align-items:center;justify-content:center;gap:12px;margin:10px 0 4px}
+.controls-row label{font-weight:700;font-size:0.95rem}
+.controls-row select{margin:0;padding:8px 14px;font-size:0.95rem;border:2px solid #c5efff;background:#f8fbff;color:var(--ink);cursor:pointer}
+
+.print-area{margin-top:15px;padding:15px;border:2px dashed #c5efff;border-radius:12px;background:#fff;min-height:90px}
+.print-history{display:none}
+.emoji-group{font-size:36px;line-height:1.5;margin:6px 0;word-break:break-all}
+.equation{font-size:2.4rem;font-weight:700;color:var(--ink);margin:10px 0}
+.puzzle-label{font-size:0.95rem;color:#888;margin:6px 0 0}
+
+/* Shape matching */
+.shape-row{display:flex;justify-content:center;gap:18px;flex-wrap:wrap;margin:10px 0}
+.shape-card{width:64px;height:64px;display:flex;align-items:center;justify-content:center;border-radius:12px;border:3px solid #c5efff;font-size:2.2rem;background:#f8fbff}
+.shape-options{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin:10px 0}
+.shape-opt{width:56px;height:56px;display:flex;align-items:center;justify-content:center;border-radius:10px;border:3px solid #ddd;font-size:1.8rem;background:#fff;cursor:pointer;transition:border-color .15s,background .15s}
+.shape-opt:hover{border-color:var(--blue);background:#eef5ff}
+.shape-opt.selected-opt{border-color:var(--blue);background:#ddeeff}
+
+/* Answer area */
+.answer-area{margin-top:14px;display:none;align-items:center;justify-content:center;gap:10px}
+.answer-area input{width:90px;font-size:1.5rem;text-align:center;border:3px solid #c5efff;border-radius:12px;padding:8px 6px;font-weight:700;color:var(--ink);outline:none;transition:border-color .2s}
+.answer-area input:focus{border-color:var(--blue)}
+.check-btn{background:#5ccc5c !important;padding:10px 20px}
+.check-btn:hover{background:#3daa3d !important}
+
+/* Feedback */
+.feedback{font-size:1.15rem;font-weight:700;margin:10px 0 4px;min-height:30px}
+.feedback.correct{color:#228b22}
+.feedback.wrong{color:#cc2200}
+
+@keyframes shake {
+  0%,100%{transform:translateX(0)}
+  15%{transform:translateX(-10px)}
+  30%{transform:translateX(10px)}
+  45%{transform:translateX(-7px)}
+  60%{transform:translateX(7px)}
+  75%{transform:translateX(-4px)}
+  90%{transform:translateX(4px)}
+}
+@keyframes correctGlow {
+  0%  {box-shadow:0 8px 24px rgba(34,50,77,.1)}
+  40% {box-shadow:0 0 0 14px rgba(80,220,80,.35),0 8px 24px rgba(34,50,77,.1)}
+  100%{box-shadow:0 8px 24px rgba(34,50,77,.1)}
+}
+@keyframes wrongGlow {
+  0%  {box-shadow:0 8px 24px rgba(34,50,77,.1)}
+  30% {box-shadow:0 0 0 14px rgba(220,50,50,.35),0 8px 24px rgba(34,50,77,.1)}
+  100%{box-shadow:0 8px 24px rgba(34,50,77,.1)}
+}
+@keyframes floatUp {
+  0%  {transform:translateY(0) rotate(0deg) scale(1);opacity:1}
+  100%{transform:translateY(-130px) rotate(360deg) scale(0.5);opacity:0}
+}
+
+.anim-correct{animation:correctGlow .8s ease}
+.anim-wrong  {animation:shake .5s ease, wrongGlow .6s ease}
+.confetti-piece{position:absolute;font-size:24px;pointer-events:none;animation:floatUp 1.1s ease-out forwards}
+
+footer{background:linear-gradient(90deg,var(--grass),#bcf7bc);border-top:4px solid #70c970;text-align:center;padding:14px;font-weight:600}
+
+@media print {
+  body * { visibility:hidden }
+  .print-history, .print-history * { visibility:visible }
+  .print-history { display:block !important; position:absolute; top:0; left:0; width:100%; padding:20px; font-family:"Trebuchet MS",sans-serif }
+  .print-puzzle-item { margin-bottom:28px; border-bottom:1px dashed #ccc; padding-bottom:18px; page-break-inside:avoid }
+  .print-puzzle-item:last-child { border-bottom:none }
+  .print-puzzle-title { font-size:0.85rem; color:#aaa; margin-bottom:6px }
+  .print-answer { font-size:1rem; font-weight:700; margin-top:8px }
+  .correct-answer { color:#228b22 }
+  .wrong-answer { color:#cc2200 }
+  button, nav, header, footer, select, .answer-area, .feedback, .print-area { display:none !important }
+}
+</style>
 </head>
 <body>
-    <header>
-        <h1 class="logo"><a href="main.html">Baby Genius</a></h1>
-        <nav aria-label="Main Navigation">
-            <ul>
-                <li><a href="Chess.html">Chess</a></li>
-                <li><a href="Math.html">Math</a></li>
-                <li><a href="Setting.html">Setting</a></li>
-            </ul>
-        </nav>
-    </header>
 
-    <main>
-        <section class="hero">
-            <h2>Math Zone</h2>
-            <p>Solve fun math games to boost your counting and problem-solving skills.</p>
-        </section>
-    </main>
+<header>
+  <h1 class="logo"><a href="main.html">Baby Genius</a></h1>
+  <nav aria-label="Main Navigation">
+    <ul>
+      <li><a href="Chess.html">Chess</a></li>
+      <li><a href="Math.html">Math</a></li>
+      <li><a href="Setting.html">Setting</a></li>
+    </ul>
+  </nav>
+</header>
 
-    <footer>
-        Baby Genius - Learning is an adventure!
-    </footer>
+<main>
+  <div class="container" id="mainContainer">
+    <h2 style="color:var(--berry)">Visual Math Puzzle</h2>
+
+    <p style="font-weight:700;margin:6px 0 2px">Choose a Category:</p>
+    <div class="category-grid">
+      <button class="cat-btn selected" data-cat="addition"       onclick="selectCat(this)"><span class="cat-icon">➕</span>Addition</button>
+      <button class="cat-btn"          data-cat="subtraction"    onclick="selectCat(this)"><span class="cat-icon">➖</span>Subtraction</button>
+      <button class="cat-btn"          data-cat="multiplication" onclick="selectCat(this)"><span class="cat-icon">✖️</span>Multiplication</button>
+      <button class="cat-btn"          data-cat="division"       onclick="selectCat(this)"><span class="cat-icon">➗</span>Division</button>
+      <button class="cat-btn"          data-cat="counting"       onclick="selectCat(this)"><span class="cat-icon">🔢</span>Counting</button>
+      <button class="cat-btn"          data-cat="shapes"         onclick="selectCat(this)"><span class="cat-icon">🔷</span>Match Shapes</button>
+      <button class="cat-btn"          data-cat="missing"        onclick="selectCat(this)"><span class="cat-icon">❓</span>Missing Number</button>
+      <button class="cat-btn"          data-cat="compare"        onclick="selectCat(this)"><span class="cat-icon">⚖️</span>Compare</button>
+    </div>
+
+    <div class="controls-row">
+      <label for="difficulty">Difficulty:</label>
+      <select id="difficulty">
+        <option value="easy">Easy</option>
+        <option value="medium">Medium</option>
+        <option value="hard">Hard</option>
+      </select>
+    </div>
+
+    <div class="print-area" id="puzzle-content">Pick a category and click Generate!</div>
+
+    <div class="answer-area" id="answer-area">
+      <input type="number" id="user-answer" placeholder="?" min="0">
+      <button class="check-btn" onclick="checkAnswer()">Check ✔</button>
+    </div>
+    <div class="feedback" id="feedback"></div>
+
+    <button id="generate-btn" onclick="generatePuzzle()">Generate Puzzle</button>
+    <button id="next-btn" onclick="generatePuzzle()" style="display:none;background:#ff6b9a;">➡️ Next Question</button>
+    <button onclick="printPuzzle()">🖨️ Print</button>
+  </div>
+</main>
+
+<div class="print-history" id="print-history"></div>
+
+<footer>
+  Baby Genius - Learning is an adventure!
+</footer>
+
+<script>
+let correctAnswer      = null;
+let puzzleCount        = 0;
+let currentHistoryItem = null;
+let currentAnswered    = false;
+let selectedCat        = 'addition';
+let isShapePuzzle      = false;
+
+// ── Category selection ─────────────────────────────────────────────
+function selectCat(btn) {
+  document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  selectedCat = btn.dataset.cat;
+}
+
+// ── Puzzle banks ───────────────────────────────────────────────────
+const PUZZLES = {
+
+  addition: {
+    easy: () => {
+      const a = rand(1,5), b = rand(1,5);
+      const [iA,iB] = pick([['🍎','🍊'],['🌟','⭐'],['🐱','🐶'],['🍬','🍭']]);
+      return {
+        html:`<div class="emoji-group">${iA.repeat(a)}</div>
+              <div style="font-size:1.8rem">➕</div>
+              <div class="emoji-group">${iB.repeat(b)}</div>
+              <p class="equation">${a} + ${b} = ?</p>`,
+        label:'Count all the items!', answer:a+b
+      };
+    },
+    medium: () => {
+      const a=rand(10,25), b=rand(5,20);
+      return {html:`<p class="equation">${a} + ${b} = ?</p>`,label:'Add the two numbers',answer:a+b};
+    },
+    hard: () => {
+      const a=rand(35,99), b=rand(20,60);
+      return {html:`<p class="equation">${a} + ${b} = ?</p>`,label:'Add the two numbers',answer:a+b};
+    }
+  },
+
+  subtraction: {
+    easy: () => {
+      const a=rand(3,9), b=rand(1,a-1);
+      const icon=pick(['🍎','🌟','🐟','🎈']);
+      return {
+        html:`<div class="emoji-group">${icon.repeat(a)}</div>
+              <p class="equation">${a} − ${b} = ?</p>`,
+        label:`Take away ${b} ${icon}`, answer:a-b
+      };
+    },
+    medium: () => {
+      const b=rand(5,15), a=b+rand(5,20);
+      return {html:`<p class="equation">${a} − ${b} = ?</p>`,label:'Subtract the numbers',answer:a-b};
+    },
+    hard: () => {
+      const b=rand(20,50), a=b+rand(15,50);
+      return {html:`<p class="equation">${a} − ${b} = ?</p>`,label:'Subtract the numbers',answer:a-b};
+    }
+  },
+
+  multiplication: {
+    easy: () => {
+      const a=rand(2,4), b=rand(2,5);
+      const icon=pick(['🌟','🍎','🐟','🎈']);
+      return {
+        html:`<p class="equation">${a} × ${b} = ?</p>
+              <p style="font-size:0.95rem;color:#888">${a} groups of ${b} ${icon}</p>`,
+        label:'Multiply!', answer:a*b
+      };
+    },
+    medium: () => {
+      const a=rand(3,7), b=rand(3,7);
+      return {html:`<p class="equation">${a} × ${b} = ?</p>`,label:'Multiply!',answer:a*b};
+    },
+    hard: () => {
+      const a=rand(6,12), b=rand(6,12);
+      return {html:`<p class="equation">${a} × ${b} = ?</p>`,label:'Multiply!',answer:a*b};
+    }
+  },
+
+  division: {
+    easy: () => {
+      const d=rand(2,4), r=rand(2,5);
+      return {html:`<p class="equation">${d*r} ÷ ${d} = ?</p>`,label:'Divide evenly',answer:r};
+    },
+    medium: () => {
+      const d=rand(2,6), r=rand(3,8);
+      return {html:`<p class="equation">${d*r} ÷ ${d} = ?</p>`,label:'Divide evenly',answer:r};
+    },
+    hard: () => {
+      const d=rand(5,9), r=rand(5,9);
+      return {html:`<p class="equation">${d*r} ÷ ${d} = ?</p>`,label:'Divide evenly',answer:r};
+    }
+  },
+
+  counting: {
+    easy: () => {
+      const icon=pick(['🍎','🌟','🐶','🦋','🐸','🍭']), count=rand(1,6);
+      return {html:`<div class="emoji-group">${icon.repeat(count)}</div>`,label:`How many ${icon} are there?`,answer:count};
+    },
+    medium: () => {
+      const icon=pick(['🍌','🍇','🍓','🍒','🥝','🌻','🐠']), count=rand(6,14);
+      return {html:`<div class="emoji-group">${icon.repeat(count)}</div>`,label:`How many ${icon} are there?`,answer:count};
+    },
+    hard: () => {
+      const icon=pick(['🔵','🟣','🟡','🟠','🔴','🟤']), count=rand(13,22);
+      return {html:`<div class="emoji-group">${icon.repeat(count)}</div>`,label:`How many ${icon} are there?`,answer:count};
+    }
+  },
+
+  missing: {
+    easy: () => {
+      const m=rand(1,5), b=rand(1,5);
+      return {html:`<p class="equation">? + ${b} = ${m+b}</p>`,label:'What is the missing number?',answer:m};
+    },
+    medium: () => {
+      if (Math.random()>0.5) {
+        const m=rand(2,10), b=rand(2,10);
+        return {html:`<p class="equation">? + ${b} = ${m+b}</p>`,label:'What is the missing number?',answer:m};
+      } else {
+        const m=rand(2,10), a=rand(2,10);
+        return {html:`<p class="equation">${a+m} − ? = ${a}</p>`,label:'What is the missing number?',answer:m};
+      }
+    },
+    hard: () => {
+      const m=rand(2,9), a=rand(2,9);
+      if (Math.random()>0.5) {
+        return {html:`<p class="equation">${a*m} ÷ ? = ${a}</p>`,label:'Find the missing number',answer:m};
+      }
+      return {html:`<p class="equation">${a} × ? = ${a*m}</p>`,label:'Find the missing number',answer:m};
+    }
+  },
+
+  compare: {
+    easy: () => {
+      const a=rand(1,9), b=rand(1,9);
+      return {
+        html:`<p class="equation">${a} &nbsp;or&nbsp; ${b}</p>
+              <p style="font-size:1rem;margin:4px 0">Which number is <strong>bigger</strong>?</p>`,
+        label:'Type the bigger number', answer:Math.max(a,b)
+      };
+    },
+    medium: () => {
+      const a=rand(10,50), b=rand(10,50);
+      return {
+        html:`<p class="equation">${a} &nbsp;or&nbsp; ${b}</p>
+              <p style="font-size:1rem;margin:4px 0">Which number is <strong>smaller</strong>?</p>`,
+        label:'Type the smaller number', answer:Math.min(a,b)
+      };
+    },
+    hard: () => {
+      const nums=[rand(10,99),rand(10,99),rand(10,99)];
+      return {
+        html:`<p class="equation">${nums.join(' , ')}</p>
+              <p style="font-size:1rem;margin:4px 0">What is the <strong>largest</strong> number?</p>`,
+        label:'Type the largest number', answer:Math.max(...nums)
+      };
+    }
+  }
+};
+
+// ── Shape matching ─────────────────────────────────────────────────
+const SHAPE_SETS = {
+  easy:   ['⬛','🔴','🔺','🔵','⭐','🟢','🟡','🟠'],
+  medium: ['🔷','🔶','🟥','🟦','🟨','🟣','🟤','⬜'],
+  hard:   ['🔹','🔸','💠','🔲','🔳','🟧','🟩','🟪']
+};
+
+function makeShapePuzzle(difficulty) {
+  const pool    = SHAPE_SETS[difficulty];
+  const target  = pick(pool);
+  let others    = shuffle(pool.filter(s => s !== target)).slice(0, 3);
+  const options = shuffle([target, ...others]);
+  const correctIdx = options.indexOf(target);
+
+  const optHTML = options.map((s,i) =>
+    `<div class="shape-opt" data-idx="${i}" onclick="selectShape(this,${i})">${s}</div>`
+  ).join('');
+
+  return {
+    html:`<p style="font-size:0.95rem;font-weight:700;margin:6px 0">Find the matching shape:</p>
+          <div class="shape-row"><div class="shape-card">${target}</div></div>
+          <p style="font-size:0.85rem;color:#888;margin:4px 0">Click the same shape below:</p>
+          <div class="shape-options" id="shape-options">${optHTML}</div>`,
+    label:'Click the shape that matches!',
+    answer:correctIdx,
+    isShape:true
+  };
+}
+
+function selectShape(el, idx) {
+  if (currentAnswered) return;
+  document.querySelectorAll('.shape-opt').forEach(o => o.classList.remove('selected-opt'));
+  el.classList.add('selected-opt');
+
+  const isCorrect = idx === correctAnswer;
+  currentAnswered = true;
+
+  const feedback = document.getElementById('feedback');
+  if (isCorrect) {
+    feedback.textContent = '🎉 Correct! Amazing job!';
+    feedback.className   = 'feedback correct';
+    triggerCorrect();
+  } else {
+    feedback.textContent = '❌ Not quite — try again next time!';
+    feedback.className   = 'feedback wrong';
+    triggerWrong();
+  }
+
+  if (currentHistoryItem) {
+    const row = currentHistoryItem.querySelector('.print-answer-row');
+    if (row) {
+      const opts = document.querySelectorAll('.shape-opt');
+      const yours   = opts[idx]           ? opts[idx].textContent           : '?';
+      const correct = opts[correctAnswer] ? opts[correctAnswer].textContent : '?';
+      row.innerHTML = isCorrect
+        ? `<p class="print-answer correct-answer">✅ Your answer: <strong>${yours}</strong> — Correct!</p>`
+        : `<p class="print-answer wrong-answer">❌ Your answer: <strong>${yours}</strong> &nbsp;|&nbsp; Correct answer: <strong>${correct}</strong></p>`;
+    }
+  }
+}
+
+// ── Generate ───────────────────────────────────────────────────────
+function generatePuzzle() {
+  const difficulty = document.getElementById('difficulty').value;
+  isShapePuzzle    = false;
+
+  let puzzle;
+  if (selectedCat === 'shapes') {
+    puzzle = makeShapePuzzle(difficulty);
+    isShapePuzzle = true;
+  } else {
+    puzzle = PUZZLES[selectedCat][difficulty]();
+  }
+
+  correctAnswer = puzzle.answer;
+  puzzleCount++;
+
+  document.getElementById('puzzle-content').innerHTML =
+    puzzle.html + `<p class="puzzle-label">${puzzle.label}</p>`;
+
+  // Print history entry
+  const catLabel = document.querySelector(`.cat-btn[data-cat="${selectedCat}"]`).textContent.trim();
+  const item = document.createElement('div');
+  item.className = 'print-puzzle-item';
+  item.innerHTML =
+    `<div class="print-puzzle-title">Puzzle #${puzzleCount} — ${catLabel} · ${difficulty.charAt(0).toUpperCase()+difficulty.slice(1)}</div>` +
+    puzzle.html +
+    `<p class="puzzle-label">${puzzle.label}</p>` +
+    `<div class="print-answer-row"></div>`;
+  document.getElementById('print-history').appendChild(item);
+  currentHistoryItem = item;
+  currentAnswered    = false;
+
+  // Show number input only for non-shape puzzles
+  document.getElementById('answer-area').style.display = isShapePuzzle ? 'none' : 'flex';
+
+  const feedback = document.getElementById('feedback');
+  feedback.textContent = '';
+  feedback.className   = 'feedback';
+
+  if (!isShapePuzzle) {
+    const inp = document.getElementById('user-answer');
+    inp.value = '';
+    inp.focus();
+  }
+
+  const box = document.getElementById('mainContainer');
+  box.classList.remove('anim-correct','anim-wrong');
+
+  // Show Next Question, hide Generate
+  document.getElementById('generate-btn').style.display = 'none';
+  document.getElementById('next-btn').style.display = 'inline-block';
+}
+
+// ── Check answer ───────────────────────────────────────────────────
+function checkAnswer() {
+  const input    = document.getElementById('user-answer');
+  const feedback = document.getElementById('feedback');
+  const val      = parseInt(input.value, 10);
+
+  if (isNaN(val)) {
+    feedback.textContent = 'Please enter a number!';
+    feedback.className   = 'feedback wrong';
+    return;
+  }
+
+  const isCorrect = val === correctAnswer;
+  if (isCorrect) {
+    feedback.textContent = '🎉 Correct! Amazing job!';
+    feedback.className   = 'feedback correct';
+    triggerCorrect();
+  } else {
+    feedback.textContent = '❌ Not quite — try again!';
+    feedback.className   = 'feedback wrong';
+    triggerWrong();
+  }
+
+  if (currentHistoryItem && !currentAnswered) {
+    currentAnswered = true;
+    const row = currentHistoryItem.querySelector('.print-answer-row');
+    if (row) {
+      row.innerHTML = isCorrect
+        ? `<p class="print-answer correct-answer">✅ Your answer: <strong>${val}</strong> — Correct!</p>`
+        : `<p class="print-answer wrong-answer">❌ Your answer: <strong>${val}</strong> &nbsp;|&nbsp; Correct answer: <strong>${correctAnswer}</strong></p>`;
+    }
+  }
+}
+
+// ── Animations ─────────────────────────────────────────────────────
+function triggerCorrect() {
+  const box = document.getElementById('mainContainer');
+  resetAnim(box);
+  box.classList.add('anim-correct');
+  const celebEmojis = ['🎉','⭐','🌟','🎈','✨','🏆','🎊','💫'];
+  for (let i=0;i<14;i++) {
+    const el = document.createElement('div');
+    el.className   = 'confetti-piece';
+    el.textContent = pick(celebEmojis);
+    el.style.left           = rand(5,92)+'%';
+    el.style.bottom         = rand(5,20)+'%';
+    el.style.animationDelay = (i*70)+'ms';
+    box.appendChild(el);
+    setTimeout(()=>el.remove(),1500);
+  }
+}
+function triggerWrong() {
+  const box = document.getElementById('mainContainer');
+  resetAnim(box);
+  box.classList.add('anim-wrong');
+}
+function resetAnim(el) {
+  el.classList.remove('anim-correct','anim-wrong');
+  void el.offsetWidth;
+}
+
+// ── Helpers ────────────────────────────────────────────────────────
+function rand(min,max){ return Math.floor(Math.random()*(max-min+1))+min; }
+function pick(arr)    { return arr[rand(0,arr.length-1)]; }
+function shuffle(arr) {
+  const a=[...arr];
+  for(let i=a.length-1;i>0;i--){const j=rand(0,i);[a[i],a[j]]=[a[j],a[i]];}
+  return a;
+}
+function printPuzzle(){ window.print(); }
+
+document.addEventListener('keydown', e => {
+  if (e.key==='Enter' && document.getElementById('answer-area').style.display==='flex') checkAnswer();
+});
+</script>
 </body>
 </html>
