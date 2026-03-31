@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Baby Genius - Setting</title>
     <link rel="stylesheet" href="style.css">
+    <script src="progress.js" defer></script>
 </head>
 <body>
     <header>
@@ -22,6 +23,28 @@
         <section class="hero">
             <h2>Settings</h2>
             <p>Choose your learning preferences and make Baby Genius perfect for you.</p>
+        </section>
+
+        <section class="tracker-grid" aria-label="Progress Tracker">
+            <article class="tracker-card settings-card">
+                <h3>Progress Tracker</h3>
+                <div class="progress-row">
+                    <span>Chess puzzles completed</span>
+                    <strong id="chess-progress-count">0</strong>
+                </div>
+                <div class="progress-bar" aria-hidden="true">
+                    <div class="progress-fill chess-fill" id="chess-progress-bar"></div>
+                </div>
+                <div class="progress-row">
+                    <span>Math puzzles completed</span>
+                    <strong id="math-progress-count">0</strong>
+                </div>
+                <div class="progress-bar" aria-hidden="true">
+                    <div class="progress-fill math-fill" id="math-progress-bar"></div>
+                </div>
+                <p class="progress-note" id="progress-summary">Complete a puzzle in Chess or Math to start tracking your progress.</p>
+                <button type="button" class="tracker-button reset-button" id="reset-progress">Reset Progress</button>
+            </article>
         </section>
     </main>
 
