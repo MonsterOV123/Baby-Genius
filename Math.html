@@ -55,6 +55,7 @@ button:hover{background:#1e66d0}
 .emoji-group{font-size:36px;line-height:1.5;margin:6px 0;word-break:break-all}
 .equation{font-size:2.4rem;font-weight:700;color:var(--ink);margin:10px 0}
 .puzzle-label{font-size:0.95rem;color:#888;margin:6px 0 0}
+.print-answer-line{border-bottom:2px solid #22324d;width:70px;margin:10px auto 0;height:26px}
 
 /* Shape matching */
 .shape-row{display:flex;justify-content:center;gap:18px;flex-wrap:wrap;margin:10px 0}
@@ -107,15 +108,46 @@ button:hover{background:#1e66d0}
 footer{background:linear-gradient(90deg,var(--grass),#bcf7bc);border-top:4px solid #70c970;text-align:center;padding:14px;font-weight:600}
 
 @media print {
+  * { -webkit-print-color-adjust:exact; print-color-adjust:exact }
   body * { visibility:hidden }
   .print-history, .print-history * { visibility:visible }
-  .print-history { display:block !important; position:absolute; top:0; left:0; width:100%; padding:20px; font-family:"Trebuchet MS",sans-serif }
-  .print-puzzle-item { margin-bottom:28px; border-bottom:1px dashed #ccc; padding-bottom:18px; page-break-inside:avoid }
-  .print-puzzle-item:last-child { border-bottom:none }
-  .print-puzzle-title { font-size:0.85rem; color:#aaa; margin-bottom:6px }
-  .print-answer { font-size:1rem; font-weight:700; margin-top:8px }
-  .correct-answer { color:#228b22 }
-  .wrong-answer { color:#cc2200 }
+  .print-history {
+    display:block !important; position:absolute; top:0; left:0; width:100%;
+    padding:18px 24px; font-family:"Trebuchet MS","Comic Sans MS",sans-serif; background:#fff;
+  }
+
+  /* Page header */
+  .print-page-header { text-align:center; margin-bottom:18px; padding-bottom:12px; border-bottom:3px solid #ffd84d }
+  .print-page-header h1 { font-size:1.8rem; color:#ff4f84; margin:0 0 4px; text-shadow:1px 1px 0 #ffe }
+  .print-page-header p  { font-size:0.8rem; color:#888; margin:0 }
+
+  /* 2-column grid */
+  .print-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px }
+
+  /* Individual puzzle card */
+  .print-puzzle-item {
+    border:2px solid #c5efff; border-radius:14px; padding:12px 14px;
+    page-break-inside:avoid; background:#f8fbff; text-align:center;
+  }
+  .print-puzzle-title {
+    font-size:0.72rem; color:#aaa; font-weight:700; margin-bottom:6px;
+    text-transform:uppercase; letter-spacing:.04em;
+  }
+
+  /* Scale down interactive-size elements */
+  .print-puzzle-item .emoji-group  { font-size:1.25rem; line-height:1.7; margin:4px 0 }
+  .print-puzzle-item .equation     { font-size:1.7rem; margin:6px 0 }
+  .print-puzzle-item .puzzle-label { font-size:0.78rem; color:#999; margin:4px 0 0 }
+  .print-puzzle-item .shape-row    { gap:8px; margin:6px 0 }
+  .print-puzzle-item .shape-card   { width:44px; height:44px; font-size:1.5rem }
+  .print-puzzle-item .shape-options { display:none }
+
+  /* Answer section */
+  .print-answer-line { border-bottom:2px solid #22324d; width:70px; margin:8px auto 0; height:22px }
+  .print-answer      { font-size:0.85rem; font-weight:700; margin-top:8px }
+  .correct-answer    { color:#228b22 }
+  .wrong-answer      { color:#cc2200 }
+
   button, nav, header, footer, select, .answer-area, .feedback, .print-area { display:none !important }
 }
 </style>
@@ -172,7 +204,13 @@ footer{background:linear-gradient(90deg,var(--grass),#bcf7bc);border-top:4px sol
   </div>
 </main>
 
-<div class="print-history" id="print-history"></div>
+<div class="print-history" id="print-history">
+  <div class="print-page-header">
+    <h1>🧠 Baby Genius — Math Worksheet</h1>
+    <p id="print-date"></p>
+  </div>
+  <div class="print-grid" id="print-grid"></div>
+</div>
 
 <footer>
   Baby Genius - Learning is an adventure!
@@ -427,8 +465,8 @@ function generatePuzzle() {
     `<div class="print-puzzle-title">Puzzle #${puzzleCount} — ${catLabel} · ${difficulty.charAt(0).toUpperCase()+difficulty.slice(1)}</div>` +
     puzzle.html +
     `<p class="puzzle-label">${puzzle.label}</p>` +
-    `<div class="print-answer-row"></div>`;
-  document.getElementById('print-history').appendChild(item);
+    `<div class="print-answer-row"><div class="print-answer-line"></div></div>`;
+  document.getElementById('print-grid').appendChild(item);
   currentHistoryItem = item;
   currentAnswered    = false;
 
@@ -522,7 +560,27 @@ function shuffle(arr) {
   for(let i=a.length-1;i>0;i--){const j=rand(0,i);[a[i],a[j]]=[a[j],a[i]];}
   return a;
 }
-function printPuzzle(){ window.print(); }
+function printPuzzle() {
+  document.getElementById('print-date').textContent =
+    'Printed on ' + new Date().toLocaleDateString('en-US', {weekday:'long', year:'numeric', month:'long', day:'numeric'});
+  window.print();
+}
+
+// After printing, reset everything for a fresh new worksheet
+window.addEventListener('afterprint', () => {
+  document.getElementById('print-grid').innerHTML = '';
+  puzzleCount        = 0;
+  correctAnswer      = null;
+  currentHistoryItem = null;
+  currentAnswered    = false;
+
+  document.getElementById('puzzle-content').innerHTML = 'Pick a category and click Generate!';
+  document.getElementById('answer-area').style.display = 'none';
+  document.getElementById('feedback').textContent = '';
+  document.getElementById('feedback').className   = 'feedback';
+  document.getElementById('generate-btn').style.display = 'inline-block';
+  document.getElementById('next-btn').style.display     = 'none';
+});
 
 document.addEventListener('keydown', e => {
   if (e.key==='Enter' && document.getElementById('answer-area').style.display==='flex') checkAnswer();
