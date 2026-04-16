@@ -27,21 +27,83 @@
 
         <section class="tracker-grid" aria-label="Progress Tracker">
             <article class="tracker-card settings-card">
-                <h3>Progress Tracker</h3>
-                <div class="progress-row">
-                    <span>Chess puzzles completed</span>
-                    <strong id="chess-progress-count">0</strong>
+                <div class="tracker-header">
+                    <div>
+                        <p class="tracker-kicker">Progress Tracker</p>
+                        <h3>Your Learning Journey</h3>
+                    </div>
+                    <div class="tracker-total">
+                        <span>Total Solved</span>
+                        <strong id="overall-progress-count">0</strong>
+                    </div>
                 </div>
-                <div class="progress-bar" aria-hidden="true">
-                    <div class="progress-fill chess-fill" id="chess-progress-bar"></div>
+
+                <div class="subject-grid">
+                    <section class="subject-card chess-card" aria-labelledby="chess-progress-title">
+                        <div class="subject-top">
+                            <div>
+                                <p class="subject-label">Chess</p>
+                                <h4 id="chess-progress-title">Puzzle Progress</h4>
+                            </div>
+                            <div class="subject-total">
+                                <span>Total</span>
+                                <strong id="chess-progress-count">0</strong>
+                            </div>
+                        </div>
+
+                        <div class="progress-meter" aria-hidden="true">
+                            <div class="progress-fill chess-fill" id="chess-progress-bar"></div>
+                        </div>
+
+                        <div class="difficulty-grid">
+                            <article class="difficulty-card">
+                                <span class="difficulty-name easy-pill">Easy</span>
+                                <strong id="chess-easy-count">0</strong>
+                            </article>
+                            <article class="difficulty-card">
+                                <span class="difficulty-name medium-pill">Medium</span>
+                                <strong id="chess-medium-count">0</strong>
+                            </article>
+                            <article class="difficulty-card">
+                                <span class="difficulty-name hard-pill">Hard</span>
+                                <strong id="chess-hard-count">0</strong>
+                            </article>
+                        </div>
+                    </section>
+
+                    <section class="subject-card math-card" aria-labelledby="math-progress-title">
+                        <div class="subject-top">
+                            <div>
+                                <p class="subject-label">Math</p>
+                                <h4 id="math-progress-title">Puzzle Progress</h4>
+                            </div>
+                            <div class="subject-total">
+                                <span>Total</span>
+                                <strong id="math-progress-count">0</strong>
+                            </div>
+                        </div>
+
+                        <div class="progress-meter" aria-hidden="true">
+                            <div class="progress-fill math-fill" id="math-progress-bar"></div>
+                        </div>
+
+                        <div class="difficulty-grid">
+                            <article class="difficulty-card">
+                                <span class="difficulty-name easy-pill">Easy</span>
+                                <strong id="math-easy-count">0</strong>
+                            </article>
+                            <article class="difficulty-card">
+                                <span class="difficulty-name medium-pill">Medium</span>
+                                <strong id="math-medium-count">0</strong>
+                            </article>
+                            <article class="difficulty-card">
+                                <span class="difficulty-name hard-pill">Hard</span>
+                                <strong id="math-hard-count">0</strong>
+                            </article>
+                        </div>
+                    </section>
                 </div>
-                <div class="progress-row">
-                    <span>Math puzzles completed</span>
-                    <strong id="math-progress-count">0</strong>
-                </div>
-                <div class="progress-bar" aria-hidden="true">
-                    <div class="progress-fill math-fill" id="math-progress-bar"></div>
-                </div>
+
                 <p class="progress-note" id="progress-summary">Complete a puzzle in Chess or Math to start tracking your progress.</p>
                 <button type="button" class="tracker-button reset-button" id="reset-progress">Reset Progress</button>
             </article>
