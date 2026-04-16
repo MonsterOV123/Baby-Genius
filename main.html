@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Baby Genius</title>
     <link rel="stylesheet" href="style.css">
+    <script src="progress.js" defer></script>
 </head>
 <body>
     <header>
@@ -12,21 +13,172 @@
         <nav aria-label="Main Navigation">
             <ul>
                 <li><a href="Chess.html">Chess</a></li>
-                <li><a href="Math.html">Math</a></li>
+                <li><a href="Math.html">Math</a></li> 
                 <li><a href="Setting.html">Setting</a></li>
             </ul>
         </nav>
     </header>
 
     <main>
-        <section class="hero">
-            <h2>Welcome to Baby Genius!</h2>
-            <p>Learn, play, and grow your brain with fun chess and math activities made just for kids.</p>
+        <section class="hero dashboard-hero">
+            <div class="dashboard-hero-copy">
+                <p class="hero-kicker">Learning Dashboard</p>
+                <h2>Welcome back to Baby Genius!</h2>
+                <p>Jump into chess puzzles, solve colorful math games, and watch your progress grow every time you play.</p>
+                <div class="hero-actions">
+                    <a class="dashboard-button primary-action" href="Chess.html">Play Chess</a>
+                    <a class="dashboard-button secondary-action" href="Math.html">Play Math</a>
+                    <a class="dashboard-button soft-action" href="Setting.html">View Tracker</a>
+                </div>
+            </div>
+
+            <aside class="hero-highlight" aria-label="Progress snapshot">
+                <span class="highlight-label">Puzzles Solved</span>
+                <strong id="dashboard-total-count">0</strong>
+                <p id="dashboard-summary">Start with a chess or math puzzle to build your streak.</p>
+            </aside>
+        </section>
+
+        <section class="dashboard-grid" aria-label="Main dashboard">
+            <article class="dashboard-panel stats-panel">
+                <div class="panel-heading">
+                    <div>
+                        <p class="panel-kicker">Live Progress</p>
+                        <h3>Today&apos;s Snapshot</h3>
+                    </div>
+                    <a class="panel-link" href="Setting.html">Open tracker</a>
+                </div>
+
+                <div class="mini-subject-grid">
+                    <section class="mini-subject-card mini-chess-card">
+                        <div class="mini-subject-top">
+                            <div>
+                                <p class="mini-subject-label">Chess</p>
+                                <h4 id="dashboard-chess-total">0 solved</h4>
+                            </div>
+                        </div>
+                        <div class="mini-difficulty-row">
+                            <span class="mini-pill easy-pill">Easy <strong id="dashboard-chess-easy">0</strong></span>
+                            <span class="mini-pill medium-pill">Medium <strong id="dashboard-chess-medium">0</strong></span>
+                            <span class="mini-pill hard-pill">Hard <strong id="dashboard-chess-hard">0</strong></span>
+                        </div>
+                    </section>
+
+                    <section class="mini-subject-card mini-math-card">
+                        <div class="mini-subject-top">
+                            <div>
+                                <p class="mini-subject-label">Math</p>
+                                <h4 id="dashboard-math-total">0 solved</h4>
+                            </div>
+                        </div>
+                        <div class="mini-difficulty-row">
+                            <span class="mini-pill easy-pill">Easy <strong id="dashboard-math-easy">0</strong></span>
+                            <span class="mini-pill medium-pill">Medium <strong id="dashboard-math-medium">0</strong></span>
+                            <span class="mini-pill hard-pill">Hard <strong id="dashboard-math-hard">0</strong></span>
+                        </div>
+                    </section>
+                </div>
+            </article>
+
+            <article class="dashboard-panel">
+                <div class="panel-heading">
+                    <div>
+                        <p class="panel-kicker">Quick Start</p>
+                        <h3>Pick Your Next Mission</h3>
+                    </div>
+                </div>
+
+                <div class="mission-grid">
+                    <a class="mission-card mission-chess" href="Chess.html">
+                        <span class="mission-icon">♟</span>
+                        <h4>Chess Trainer</h4>
+                        <p>Practice easy, medium, and hard puzzles or play the computer.</p>
+                    </a>
+                    <a class="mission-card mission-math" href="Math.html">
+                        <span class="mission-icon">➕</span>
+                        <h4>Math Lab</h4>
+                        <p>Work through visual problems with counting, shapes, and number skills.</p>
+                    </a>
+                </div>
+            </article>
+
+            <article class="dashboard-panel tips-panel">
+                <div class="panel-heading">
+                    <div>
+                        <p class="panel-kicker">Learning Tips</p>
+                        <h3>Best Way To Use It</h3>
+                    </div>
+                </div>
+
+                <div class="tip-list">
+                    <div class="tip-card">
+                        <span class="tip-number">1</span>
+                        <p>Start with one easy puzzle in each subject to warm up.</p>
+                    </div>
+                    <div class="tip-card">
+                        <span class="tip-number">2</span>
+                        <p>Mix chess and math so your tracker stays balanced across both skills.</p>
+                    </div>
+                    <div class="tip-card">
+                        <span class="tip-number">3</span>
+                        <p>Move up to medium and hard after you solve a few easier rounds.</p>
+                    </div>
+                </div>
+            </article>
         </section>
     </main>
 
     <footer>
         Baby Genius - Learning is an adventure!
     </footer>
+
+    <script>
+        function updateDashboard() {
+            if (!window.BabyGeniusProgress) {
+                return;
+            }
+
+            const snapshot = window.BabyGeniusProgress.buildProgressSnapshot();
+            const totalCount = document.getElementById("dashboard-total-count");
+            const summary = document.getElementById("dashboard-summary");
+            const chessTotal = document.getElementById("dashboard-chess-total");
+            const mathTotal = document.getElementById("dashboard-math-total");
+            const chessEasy = document.getElementById("dashboard-chess-easy");
+            const chessMedium = document.getElementById("dashboard-chess-medium");
+            const chessHard = document.getElementById("dashboard-chess-hard");
+            const mathEasy = document.getElementById("dashboard-math-easy");
+            const mathMedium = document.getElementById("dashboard-math-medium");
+            const mathHard = document.getElementById("dashboard-math-hard");
+
+            totalCount.textContent = snapshot.overallTotal;
+            chessTotal.textContent = `${snapshot.chessTotal} solved`;
+            mathTotal.textContent = `${snapshot.mathTotal} solved`;
+            chessEasy.textContent = snapshot.chessStats.easy;
+            chessMedium.textContent = snapshot.chessStats.medium;
+            chessHard.textContent = snapshot.chessStats.hard;
+            mathEasy.textContent = snapshot.mathStats.easy;
+            mathMedium.textContent = snapshot.mathStats.medium;
+            mathHard.textContent = snapshot.mathStats.hard;
+
+            if (snapshot.overallTotal === 0) {
+                summary.textContent = "Start with a chess or math puzzle to build your streak.";
+                return;
+            }
+
+            if (snapshot.chessTotal === snapshot.mathTotal) {
+                summary.textContent = "Nice work. Your chess and math progress are evenly matched.";
+                return;
+            }
+
+            if (snapshot.chessTotal > snapshot.mathTotal) {
+                summary.textContent = "Chess is in the lead right now. Add a math round to balance your dashboard.";
+                return;
+            }
+
+            summary.textContent = "Math is in the lead right now. Try a chess puzzle to round out your practice.";
+        }
+
+        document.addEventListener("DOMContentLoaded", updateDashboard);
+    </script>
 </body>
 </html>
