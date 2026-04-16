@@ -216,6 +216,7 @@ footer{background:linear-gradient(90deg,var(--grass),#bcf7bc);border-top:4px sol
   Baby Genius - Learning is an adventure!
 </footer>
 
+<script src="progress.js"></script>
 <script>
 let correctAnswer      = null;
 let puzzleCount        = 0;
@@ -223,6 +224,12 @@ let currentHistoryItem = null;
 let currentAnswered    = false;
 let selectedCat        = 'addition';
 let isShapePuzzle      = false;
+let currentPuzzleProgressId = null;
+
+function markCurrentMathPuzzleComplete() {
+  if (!window.BabyGeniusProgress || !currentPuzzleProgressId) return;
+  window.BabyGeniusProgress.markProgress('math', currentPuzzleProgressId);
+}
 
 // ── Category selection ─────────────────────────────────────────────
 function selectCat(btn) {
@@ -416,6 +423,7 @@ function selectShape(el, idx) {
 
   const feedback = document.getElementById('feedback');
   if (isCorrect) {
+    markCurrentMathPuzzleComplete();
     feedback.textContent = '🎉 Correct! Amazing job!';
     feedback.className   = 'feedback correct';
     triggerCorrect();
@@ -453,6 +461,7 @@ function generatePuzzle() {
 
   correctAnswer = puzzle.answer;
   puzzleCount++;
+  currentPuzzleProgressId = `${selectedCat}-${difficulty}-${puzzleCount}`;
 
   document.getElementById('puzzle-content').innerHTML =
     puzzle.html + `<p class="puzzle-label">${puzzle.label}</p>`;
@@ -505,6 +514,7 @@ function checkAnswer() {
 
   const isCorrect = val === correctAnswer;
   if (isCorrect) {
+    markCurrentMathPuzzleComplete();
     feedback.textContent = '🎉 Correct! Amazing job!';
     feedback.className   = 'feedback correct';
     triggerCorrect();
@@ -573,6 +583,7 @@ window.addEventListener('afterprint', () => {
   correctAnswer      = null;
   currentHistoryItem = null;
   currentAnswered    = false;
+  currentPuzzleProgressId = null;
 
   document.getElementById('puzzle-content').innerHTML = 'Pick a category and click Generate!';
   document.getElementById('answer-area').style.display = 'none';
