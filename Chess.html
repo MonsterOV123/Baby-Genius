@@ -8,6 +8,10 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
     <style>
         .chess-page {
+            --boardBaseSize: 500px;
+            --boardLight: #f0d9b5;
+            --boardDark: #b58863;
+            --boardFrame: #7a5238;
             background: linear-gradient(180deg, #fffdf5 0%, #f5fbff 100%);
             border-radius: 28px;
             padding: 28px 22px;
@@ -30,6 +34,38 @@
             line-height: 1.6;
             font-size: 1.05rem;
             color: #33475f;
+        }
+
+        .board-customizer-card {
+            max-width: 980px;
+            margin: 0 auto 24px;
+        }
+
+        .board-customizer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 14px;
+            align-items: end;
+        }
+
+        .custom-field {
+            display: grid;
+            gap: 8px;
+        }
+
+        .custom-field-wide {
+            grid-column: 1 / -1;
+        }
+
+        .custom-label {
+            font-weight: 800;
+            color: #35506c;
+        }
+
+        .theme-picker {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
         }
 
         .mode-buttons,
@@ -58,7 +94,8 @@
         .difficulty-btn,
         .lesson-btn,
         .play-level-btn,
-        .play-side-btn {
+        .play-side-btn,
+        .board-theme-btn {
             border: none;
             border-radius: 999px;
             padding: 12px 18px;
@@ -75,7 +112,8 @@
         .difficulty-btn:hover,
         .lesson-btn:hover,
         .play-level-btn:hover,
-        .play-side-btn:hover {
+        .play-side-btn:hover,
+        .board-theme-btn:hover {
             transform: translateY(-2px);
         }
 
@@ -83,10 +121,56 @@
         .difficulty-btn.active,
         .lesson-btn.active,
         .play-level-btn.active,
-        .play-side-btn.active {
+        .play-side-btn.active,
+        .board-theme-btn.active {
             background: #5ab4ff;
             color: white;
             box-shadow: 0 4px 0 #2c8cda;
+        }
+
+        .color-input {
+            width: 100%;
+            height: 48px;
+            padding: 0;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+        }
+
+        .range-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .range-input {
+            width: 100%;
+            accent-color: #5ab4ff;
+        }
+
+        .size-value {
+            min-width: 64px;
+            text-align: right;
+            color: #35506c;
+        }
+
+        .toggle-field {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 800;
+            color: #30445c;
+        }
+
+        .toggle-field input {
+            width: 18px;
+            height: 18px;
+            accent-color: #5ab4ff;
+        }
+
+        .board-actions {
+            display: flex;
+            align-items: flex-end;
         }
 
         .mode-section {
@@ -159,14 +243,14 @@
         }
 
         .board-shell {
-            --boardSize: min(500px, 72vw);
+            --boardSize: min(var(--boardBaseSize), 72vw);
             display: grid;
             grid-template-columns: 28px auto;
             gap: 8px;
             justify-content: center;
             align-items: start;
             width: 100%;
-            max-width: 540px;
+            max-width: calc(var(--boardSize) + 36px);
             margin: 0 auto;
             box-sizing: border-box;
         }
@@ -179,7 +263,7 @@
             align-items: center;
             justify-items: center;
             font-weight: 800;
-            color: #5a4638;
+            color: var(--boardFrame);
             font-size: 0.95rem;
         }
 
@@ -198,10 +282,10 @@
             display: grid;
             grid-template-columns: repeat(8, 1fr);
             grid-template-rows: repeat(8, 1fr);
-            border: 8px solid #7a5238;
+            border: 8px solid var(--boardFrame);
             border-radius: 8px;
             overflow: hidden;
-            background: #7a5238;
+            background: var(--boardFrame);
             box-shadow: 0 10px 22px rgba(34, 50, 77, 0.15);
             box-sizing: border-box;
         }
@@ -211,9 +295,20 @@
             grid-template-columns: repeat(8, 1fr);
             width: 100%;
             font-weight: 800;
-            color: #5a4638;
+            color: var(--boardFrame);
             font-size: 0.95rem;
             text-align: center;
+        }
+
+        .board-shell.coordinates-hidden {
+            grid-template-columns: minmax(0, var(--boardSize));
+            gap: 0;
+            max-width: var(--boardSize);
+        }
+
+        .board-shell.coordinates-hidden .rank-labels,
+        .board-shell.coordinates-hidden .file-labels {
+            display: none;
         }
 
         .file-labels div,
@@ -250,11 +345,11 @@
         }
 
         .light {
-            background: #f0d9b5;
+            background: var(--boardLight);
         }
 
         .dark {
-            background: #b58863;
+            background: var(--boardDark);
         }
 
         .square.selected {
@@ -435,10 +530,10 @@
             display: grid;
             grid-template-columns: repeat(8, 1fr);
             grid-template-rows: repeat(8, 1fr);
-            border: 6px solid #7a5238;
+            border: 6px solid var(--boardFrame);
             border-radius: 10px;
             overflow: hidden;
-            background: #7a5238;
+            background: var(--boardFrame);
             box-sizing: border-box;
         }
 
@@ -498,6 +593,10 @@
         }
 
         @media (max-width: 700px) {
+            .board-customizer-grid {
+                grid-template-columns: 1fr;
+            }
+
             .board-shell {
                 --boardSize: min(440px, 78vw);
                 grid-template-columns: 24px auto;
@@ -535,6 +634,53 @@
                 challenges. Learn Pieces Mode teaches how each piece moves. Play vs Computer lets you
                 choose a side and a difficulty.
             </p>
+
+            <div class="card board-customizer-card">
+                <h3>Customize The Board</h3>
+                <div class="board-customizer-grid">
+                    <div class="custom-field custom-field-wide">
+                        <span class="custom-label">Quick Themes</span>
+                        <div class="theme-picker" role="group" aria-label="Board themes">
+                            <button type="button" class="board-theme-btn active" data-theme="classic">Classic</button>
+                            <button type="button" class="board-theme-btn" data-theme="ocean">Ocean</button>
+                            <button type="button" class="board-theme-btn" data-theme="forest">Forest</button>
+                            <button type="button" class="board-theme-btn" data-theme="candy">Candy</button>
+                        </div>
+                    </div>
+
+                    <label class="custom-field">
+                        <span class="custom-label">Light Squares</span>
+                        <input id="lightSquareInput" class="color-input" type="color" value="#f0d9b5">
+                    </label>
+
+                    <label class="custom-field">
+                        <span class="custom-label">Dark Squares</span>
+                        <input id="darkSquareInput" class="color-input" type="color" value="#b58863">
+                    </label>
+
+                    <label class="custom-field">
+                        <span class="custom-label">Board Frame</span>
+                        <input id="frameColorInput" class="color-input" type="color" value="#7a5238">
+                    </label>
+
+                    <div class="custom-field">
+                        <span class="custom-label">Board Size</span>
+                        <div class="range-row">
+                            <input id="boardSizeInput" class="range-input" type="range" min="360" max="620" step="10" value="500">
+                            <strong id="boardSizeValue" class="size-value">500px</strong>
+                        </div>
+                    </div>
+
+                    <label class="toggle-field">
+                        <input id="showCoordsInput" type="checkbox" checked>
+                        <span>Show ranks and files</span>
+                    </label>
+
+                    <div class="board-actions">
+                        <button id="resetBoardStyleBtn" type="button" class="reset-btn">Reset Board Style</button>
+                    </div>
+                </div>
+            </div>
 
             <div class="mode-buttons">
                 <button id="puzzleModeBtn" class="mode-btn active">Puzzle Mode</button>
@@ -746,10 +892,10 @@
         Baby Genius - Learning is an adventure!
     </footer>
 
-    <script src="progress.js"></script>
     <script>
         const files = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
         const ranks = ['8', '7', '6', '5', '4', '3', '2', '1'];
+        const BOARD_STYLE_STORAGE_KEY = 'babyGeniusChessBoardStyle';
 
         const pieceMap = {
             wK: '♔', wQ: '♕', wR: '♖', wB: '♗', wN: '♘', wP: '♙',
@@ -1042,6 +1188,8 @@
         const puzzleSection = document.getElementById('puzzleSection');
         const learnSection = document.getElementById('learnSection');
         const playSection = document.getElementById('playSection');
+        const chessPageEl = document.querySelector('.chess-page');
+        const boardShellEls = document.querySelectorAll('.board-shell');
 
         const puzzleRankLabels = document.getElementById('puzzleRankLabels');
         const puzzleFileLabels = document.getElementById('puzzleFileLabels');
@@ -1084,6 +1232,120 @@
         const playSideButtons = document.querySelectorAll('.play-side-btn');
         const newGameBtn = document.getElementById('newGameBtn');
         const undoBtn = document.getElementById('undoBtn');
+        const boardThemeButtons = document.querySelectorAll('.board-theme-btn');
+        const lightSquareInput = document.getElementById('lightSquareInput');
+        const darkSquareInput = document.getElementById('darkSquareInput');
+        const frameColorInput = document.getElementById('frameColorInput');
+        const boardSizeInput = document.getElementById('boardSizeInput');
+        const boardSizeValueEl = document.getElementById('boardSizeValue');
+        const showCoordsInput = document.getElementById('showCoordsInput');
+        const resetBoardStyleBtn = document.getElementById('resetBoardStyleBtn');
+
+        const defaultBoardStyle = Object.freeze({
+            lightSquare: '#f0d9b5',
+            darkSquare: '#b58863',
+            frameColor: '#7a5238',
+            baseSize: 500,
+            showCoordinates: true
+        });
+
+        const boardThemePresets = {
+            classic: {
+                lightSquare: '#f0d9b5',
+                darkSquare: '#b58863',
+                frameColor: '#7a5238'
+            },
+            ocean: {
+                lightSquare: '#d8f0ff',
+                darkSquare: '#5fa8d3',
+                frameColor: '#1f5f85'
+            },
+            forest: {
+                lightSquare: '#dfecc8',
+                darkSquare: '#6f9b57',
+                frameColor: '#42633a'
+            },
+            candy: {
+                lightSquare: '#ffe4ef',
+                darkSquare: '#ff8ab1',
+                frameColor: '#b95a82'
+            }
+        };
+
+        let boardStyle = loadBoardStyle();
+
+        function sanitizeHexColor(value, fallback) {
+            return typeof value === 'string' && /^#[0-9a-f]{6}$/i.test(value) ? value.toLowerCase() : fallback;
+        }
+
+        function clampBoardSize(value) {
+            const number = parseInt(value, 10);
+            if (Number.isNaN(number)) return defaultBoardStyle.baseSize;
+            return Math.min(620, Math.max(360, number));
+        }
+
+        function loadBoardStyle() {
+            try {
+                const savedStyle = JSON.parse(localStorage.getItem(BOARD_STYLE_STORAGE_KEY) || 'null');
+                if (!savedStyle) return { ...defaultBoardStyle };
+
+                return {
+                    lightSquare: sanitizeHexColor(savedStyle.lightSquare, defaultBoardStyle.lightSquare),
+                    darkSquare: sanitizeHexColor(savedStyle.darkSquare, defaultBoardStyle.darkSquare),
+                    frameColor: sanitizeHexColor(savedStyle.frameColor, defaultBoardStyle.frameColor),
+                    baseSize: clampBoardSize(savedStyle.baseSize),
+                    showCoordinates: typeof savedStyle.showCoordinates === 'boolean' ? savedStyle.showCoordinates : defaultBoardStyle.showCoordinates
+                };
+            } catch (error) {
+                return { ...defaultBoardStyle };
+            }
+        }
+
+        function saveBoardStyle() {
+            try {
+                localStorage.setItem(BOARD_STYLE_STORAGE_KEY, JSON.stringify(boardStyle));
+            } catch (error) {
+                // Ignore storage failures and keep the board usable.
+            }
+        }
+
+        function getActiveBoardTheme() {
+            const activeTheme = Object.entries(boardThemePresets).find(([, preset]) =>
+                preset.lightSquare === boardStyle.lightSquare &&
+                preset.darkSquare === boardStyle.darkSquare &&
+                preset.frameColor === boardStyle.frameColor
+            );
+
+            return activeTheme ? activeTheme[0] : null;
+        }
+
+        function updateBoardThemeButtons() {
+            const activeTheme = getActiveBoardTheme();
+            boardThemeButtons.forEach(button => {
+                button.classList.toggle('active', button.dataset.theme === activeTheme);
+            });
+        }
+
+        function applyBoardStyle() {
+            chessPageEl.style.setProperty('--boardBaseSize', `${boardStyle.baseSize}px`);
+            chessPageEl.style.setProperty('--boardLight', boardStyle.lightSquare);
+            chessPageEl.style.setProperty('--boardDark', boardStyle.darkSquare);
+            chessPageEl.style.setProperty('--boardFrame', boardStyle.frameColor);
+
+            lightSquareInput.value = boardStyle.lightSquare;
+            darkSquareInput.value = boardStyle.darkSquare;
+            frameColorInput.value = boardStyle.frameColor;
+            boardSizeInput.value = String(boardStyle.baseSize);
+            boardSizeValueEl.textContent = `${boardStyle.baseSize}px`;
+            showCoordsInput.checked = boardStyle.showCoordinates;
+
+            boardShellEls.forEach(boardShell => {
+                boardShell.classList.toggle('coordinates-hidden', !boardStyle.showCoordinates);
+            });
+
+            updateBoardThemeButtons();
+            saveBoardStyle();
+        }
 
         function squareToCoords(square) {
             return {
@@ -1185,14 +1447,6 @@
         function setPuzzleStatus(message, type = '') {
             puzzleStatusEl.textContent = message;
             puzzleStatusEl.className = `status ${type}`.trim();
-        }
-
-        function markCurrentChessPuzzleComplete() {
-            if (!window.BabyGeniusProgress) {
-                return;
-            }
-
-            window.BabyGeniusProgress.markProgress('chess', `${currentDifficulty}-${currentPuzzleIndex}`);
         }
 
         function updateDifficultyButtons() {
@@ -1312,7 +1566,6 @@
 
                 solvedPuzzle = true;
                 correctPuzzleSquare = toSquare;
-                markCurrentChessPuzzleComplete();
                 setPuzzleStatus(`Good job! 🎉 ${puzzle.answer} is the right move.`, 'good');
                 drawPuzzleBoard();
             } else {
@@ -2095,10 +2348,56 @@
         newGameBtn.addEventListener('click', startNewPlayGame);
         undoBtn.addEventListener('click', undoLastTurn);
 
+        boardThemeButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const preset = boardThemePresets[button.dataset.theme];
+                if (!preset) return;
+
+                boardStyle = {
+                    ...boardStyle,
+                    lightSquare: preset.lightSquare,
+                    darkSquare: preset.darkSquare,
+                    frameColor: preset.frameColor
+                };
+                applyBoardStyle();
+            });
+        });
+
+        lightSquareInput.addEventListener('input', () => {
+            boardStyle.lightSquare = sanitizeHexColor(lightSquareInput.value, defaultBoardStyle.lightSquare);
+            applyBoardStyle();
+        });
+
+        darkSquareInput.addEventListener('input', () => {
+            boardStyle.darkSquare = sanitizeHexColor(darkSquareInput.value, defaultBoardStyle.darkSquare);
+            applyBoardStyle();
+        });
+
+        frameColorInput.addEventListener('input', () => {
+            boardStyle.frameColor = sanitizeHexColor(frameColorInput.value, defaultBoardStyle.frameColor);
+            applyBoardStyle();
+        });
+
+        boardSizeInput.addEventListener('input', () => {
+            boardStyle.baseSize = clampBoardSize(boardSizeInput.value);
+            applyBoardStyle();
+        });
+
+        showCoordsInput.addEventListener('change', () => {
+            boardStyle.showCoordinates = showCoordsInput.checked;
+            applyBoardStyle();
+        });
+
+        resetBoardStyleBtn.addEventListener('click', () => {
+            boardStyle = { ...defaultBoardStyle };
+            applyBoardStyle();
+        });
+
         puzzleModeBtn.addEventListener('click', () => showMode('puzzle'));
         learnModeBtn.addEventListener('click', () => showMode('learn'));
         playModeBtn.addEventListener('click', () => showMode('play'));
 
+        applyBoardStyle();
         populateBoardLabels(puzzleRankLabels, puzzleFileLabels);
         populateBoardLabels(learnRankLabels, learnFileLabels);
         drawReferenceBoard();
