@@ -7,11 +7,23 @@
     <link rel="stylesheet" href="style.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
     <style>
+        :root {
+            --board-light: #f0d9b5;
+            --board-dark: #b58863;
+            --board-frame: #7a5238;
+            --board-label: #5a4638;
+            --board-max-size: 500px;
+            --white-piece-fill: #ffffff;
+            --white-piece-text: #1a2430;
+            --white-piece-border: #1f2f3f;
+            --black-piece-fill: #1f2a35;
+            --black-piece-text: #ffffff;
+            --black-piece-border: #eef4ff;
+            --piece-scale: 1;
+            --piece-radius: 50%;
+        }
+
         .chess-page {
-            --boardBaseSize: 500px;
-            --boardLight: #f0d9b5;
-            --boardDark: #b58863;
-            --boardFrame: #7a5238;
             background: linear-gradient(180deg, #fffdf5 0%, #f5fbff 100%);
             border-radius: 28px;
             padding: 28px 22px;
@@ -36,38 +48,6 @@
             color: #33475f;
         }
 
-        .board-customizer-card {
-            max-width: 980px;
-            margin: 0 auto 24px;
-        }
-
-        .board-customizer-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 14px;
-            align-items: end;
-        }
-
-        .custom-field {
-            display: grid;
-            gap: 8px;
-        }
-
-        .custom-field-wide {
-            grid-column: 1 / -1;
-        }
-
-        .custom-label {
-            font-weight: 800;
-            color: #35506c;
-        }
-
-        .theme-picker {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 12px;
-        }
-
         .mode-buttons,
         .difficulty-row,
         .lesson-buttons,
@@ -83,6 +63,138 @@
             margin-bottom: 20px;
         }
 
+        .board-customization {
+            margin: 0 auto 24px;
+            max-width: 980px;
+        }
+
+        .board-customization h3 {
+            margin-bottom: 10px;
+        }
+
+        .customization-intro {
+            margin: 0 0 16px;
+            text-align: center;
+            color: #35506c;
+            line-height: 1.5;
+        }
+
+        .theme-preset-row {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        .theme-btn,
+        .piece-theme-btn {
+            border: none;
+            border-radius: 999px;
+            padding: 10px 15px;
+            font-weight: 800;
+            cursor: pointer;
+            background: #eef8ff;
+            color: #294663;
+            box-shadow: 0 4px 0 #c7e3f5;
+            transition: transform 0.15s ease, background 0.2s ease, color 0.2s ease;
+        }
+
+        .theme-btn:hover,
+        .theme-btn.active,
+        .piece-theme-btn:hover,
+        .piece-theme-btn.active {
+            transform: translateY(-2px);
+        }
+
+        .theme-btn.active,
+        .piece-theme-btn.active {
+            background: #5ab4ff;
+            color: white;
+            box-shadow: 0 4px 0 #2c8cda;
+        }
+
+        .customization-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 14px;
+            align-items: end;
+        }
+
+        .custom-control {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .custom-control label {
+            font-weight: 800;
+            color: #35506c;
+        }
+
+        .custom-control input[type="color"] {
+            width: 100%;
+            height: 48px;
+            border: 3px solid #d9f2ff;
+            border-radius: 14px;
+            background: white;
+            cursor: pointer;
+            padding: 4px;
+            box-sizing: border-box;
+        }
+
+        .custom-control input[type="range"] {
+            width: 100%;
+            accent-color: #4c96ff;
+        }
+
+        .size-readout {
+            font-weight: 800;
+            color: #4c96ff;
+            text-align: center;
+        }
+
+        .preview-chip {
+            min-height: 48px;
+            border-radius: 14px;
+            border: 3px solid #d9f2ff;
+            background:
+                linear-gradient(135deg, var(--board-light) 0 50%, var(--board-dark) 50% 100%);
+            box-shadow: inset 0 0 0 4px var(--board-frame);
+        }
+
+        .piece-preview-chip {
+            min-height: 58px;
+            border-radius: 14px;
+            border: 3px solid #d9f2ff;
+            background: linear-gradient(180deg, #f9fdff 0%, #eef8ff 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            padding: 6px;
+            box-sizing: border-box;
+        }
+
+        .customization-divider {
+            margin: 18px 0 14px;
+            text-align: center;
+            font-size: 1.05rem;
+            color: #4c96ff;
+        }
+
+        .reset-theme-btn {
+            border: none;
+            border-radius: 16px;
+            min-height: 48px;
+            padding: 12px 16px;
+            font-weight: 800;
+            cursor: pointer;
+            background: #ffcad8;
+            color: #7d2848;
+            box-shadow: 0 4px 0 #ec9fb7;
+        }
+
         .difficulty-row,
         .lesson-buttons,
         .play-level-row,
@@ -94,8 +206,7 @@
         .difficulty-btn,
         .lesson-btn,
         .play-level-btn,
-        .play-side-btn,
-        .board-theme-btn {
+        .play-side-btn {
             border: none;
             border-radius: 999px;
             padding: 12px 18px;
@@ -112,8 +223,7 @@
         .difficulty-btn:hover,
         .lesson-btn:hover,
         .play-level-btn:hover,
-        .play-side-btn:hover,
-        .board-theme-btn:hover {
+        .play-side-btn:hover {
             transform: translateY(-2px);
         }
 
@@ -121,56 +231,10 @@
         .difficulty-btn.active,
         .lesson-btn.active,
         .play-level-btn.active,
-        .play-side-btn.active,
-        .board-theme-btn.active {
+        .play-side-btn.active {
             background: #5ab4ff;
             color: white;
             box-shadow: 0 4px 0 #2c8cda;
-        }
-
-        .color-input {
-            width: 100%;
-            height: 48px;
-            padding: 0;
-            border: none;
-            background: transparent;
-            cursor: pointer;
-        }
-
-        .range-row {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .range-input {
-            width: 100%;
-            accent-color: #5ab4ff;
-        }
-
-        .size-value {
-            min-width: 64px;
-            text-align: right;
-            color: #35506c;
-        }
-
-        .toggle-field {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-weight: 800;
-            color: #30445c;
-        }
-
-        .toggle-field input {
-            width: 18px;
-            height: 18px;
-            accent-color: #5ab4ff;
-        }
-
-        .board-actions {
-            display: flex;
-            align-items: flex-end;
         }
 
         .mode-section {
@@ -243,14 +307,14 @@
         }
 
         .board-shell {
-            --boardSize: min(var(--boardBaseSize), 72vw);
+            --boardSize: min(var(--board-max-size), 72vw);
             display: grid;
             grid-template-columns: 28px auto;
             gap: 8px;
             justify-content: center;
             align-items: start;
             width: 100%;
-            max-width: calc(var(--boardSize) + 36px);
+            max-width: 540px;
             margin: 0 auto;
             box-sizing: border-box;
         }
@@ -263,7 +327,7 @@
             align-items: center;
             justify-items: center;
             font-weight: 800;
-            color: var(--boardFrame);
+            color: var(--board-label);
             font-size: 0.95rem;
         }
 
@@ -282,10 +346,10 @@
             display: grid;
             grid-template-columns: repeat(8, 1fr);
             grid-template-rows: repeat(8, 1fr);
-            border: 8px solid var(--boardFrame);
+            border: 8px solid var(--board-frame);
             border-radius: 8px;
             overflow: hidden;
-            background: var(--boardFrame);
+            background: var(--board-frame);
             box-shadow: 0 10px 22px rgba(34, 50, 77, 0.15);
             box-sizing: border-box;
         }
@@ -295,20 +359,9 @@
             grid-template-columns: repeat(8, 1fr);
             width: 100%;
             font-weight: 800;
-            color: var(--boardFrame);
+            color: var(--board-label);
             font-size: 0.95rem;
             text-align: center;
-        }
-
-        .board-shell.coordinates-hidden {
-            grid-template-columns: minmax(0, var(--boardSize));
-            gap: 0;
-            max-width: var(--boardSize);
-        }
-
-        .board-shell.coordinates-hidden .rank-labels,
-        .board-shell.coordinates-hidden .file-labels {
-            display: none;
         }
 
         .file-labels div,
@@ -345,11 +398,11 @@
         }
 
         .light {
-            background: var(--boardLight);
+            background: var(--board-light);
         }
 
         .dark {
-            background: var(--boardDark);
+            background: var(--board-dark);
         }
 
         .square.selected {
@@ -382,22 +435,23 @@
             justify-content: center;
             line-height: 1;
             font-weight: 700;
-            border-radius: 50%;
+            border-radius: var(--piece-radius);
             font-family: "Segoe UI Symbol", "Noto Sans Symbols 2", "DejaVu Sans", "Arial Unicode MS", serif;
             box-sizing: border-box;
+            transform: scale(var(--piece-scale));
         }
 
         .piece.white-piece {
-            background: #ffffff;
-            color: #1a2430;
-            border: 2px solid #1f2f3f;
+            background: var(--white-piece-fill);
+            color: var(--white-piece-text);
+            border: 2px solid var(--white-piece-border);
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.18);
         }
 
         .piece.black-piece {
-            background: #1f2a35;
-            color: #ffffff;
-            border: 2px solid #eef4ff;
+            background: var(--black-piece-fill);
+            color: var(--black-piece-text);
+            border: 2px solid var(--black-piece-border);
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.18);
         }
 
@@ -530,10 +584,10 @@
             display: grid;
             grid-template-columns: repeat(8, 1fr);
             grid-template-rows: repeat(8, 1fr);
-            border: 6px solid var(--boardFrame);
+            border: 6px solid var(--board-frame);
             border-radius: 10px;
             overflow: hidden;
-            background: var(--boardFrame);
+            background: var(--board-frame);
             box-sizing: border-box;
         }
 
@@ -593,12 +647,8 @@
         }
 
         @media (max-width: 700px) {
-            .board-customizer-grid {
-                grid-template-columns: 1fr;
-            }
-
             .board-shell {
-                --boardSize: min(440px, 78vw);
+                --boardSize: min(var(--board-max-size), 78vw);
                 grid-template-columns: 24px auto;
             }
 
@@ -635,57 +685,110 @@
                 choose a side and a difficulty.
             </p>
 
-            <div class="card board-customizer-card">
-                <h3>Customize The Board</h3>
-                <div class="board-customizer-grid">
-                    <div class="custom-field custom-field-wide">
-                        <span class="custom-label">Quick Themes</span>
-                        <div class="theme-picker" role="group" aria-label="Board themes">
-                            <button type="button" class="board-theme-btn active" data-theme="classic">Classic</button>
-                            <button type="button" class="board-theme-btn" data-theme="ocean">Ocean</button>
-                            <button type="button" class="board-theme-btn" data-theme="forest">Forest</button>
-                            <button type="button" class="board-theme-btn" data-theme="candy">Candy</button>
-                        </div>
-                    </div>
-
-                    <label class="custom-field">
-                        <span class="custom-label">Light Squares</span>
-                        <input id="lightSquareInput" class="color-input" type="color" value="#f0d9b5">
-                    </label>
-
-                    <label class="custom-field">
-                        <span class="custom-label">Dark Squares</span>
-                        <input id="darkSquareInput" class="color-input" type="color" value="#b58863">
-                    </label>
-
-                    <label class="custom-field">
-                        <span class="custom-label">Board Frame</span>
-                        <input id="frameColorInput" class="color-input" type="color" value="#7a5238">
-                    </label>
-
-                    <div class="custom-field">
-                        <span class="custom-label">Board Size</span>
-                        <div class="range-row">
-                            <input id="boardSizeInput" class="range-input" type="range" min="360" max="620" step="10" value="500">
-                            <strong id="boardSizeValue" class="size-value">500px</strong>
-                        </div>
-                    </div>
-
-                    <label class="toggle-field">
-                        <input id="showCoordsInput" type="checkbox" checked>
-                        <span>Show ranks and files</span>
-                    </label>
-
-                    <div class="board-actions">
-                        <button id="resetBoardStyleBtn" type="button" class="reset-btn">Reset Board Style</button>
-                    </div>
-                </div>
-            </div>
-
             <div class="mode-buttons">
                 <button id="puzzleModeBtn" class="mode-btn active">Puzzle Mode</button>
                 <button id="learnModeBtn" class="mode-btn">Learn Pieces Mode</button>
                 <button id="playModeBtn" class="mode-btn">Play vs Computer</button>
+            </div>
+
+            <div class="card board-customization">
+                <h3>Board Customization</h3>
+                <p class="customization-intro">
+                    Pick a board theme, fine-tune the colors, and change the board size for every chess activity on this page.
+                </p>
+
+                <div class="theme-preset-row">
+                    <button class="theme-btn active" data-theme="classic">Classic Wood</button>
+                    <button class="theme-btn" data-theme="candy">Candy Pop</button>
+                    <button class="theme-btn" data-theme="ocean">Ocean Blue</button>
+                    <button class="theme-btn" data-theme="forest">Forest Green</button>
+                </div>
+
+                <div class="customization-grid">
+                    <div class="custom-control">
+                        <label for="lightSquareColor">Light Squares</label>
+                        <input id="lightSquareColor" type="color" value="#f0d9b5">
+                    </div>
+
+                    <div class="custom-control">
+                        <label for="darkSquareColor">Dark Squares</label>
+                        <input id="darkSquareColor" type="color" value="#b58863">
+                    </div>
+
+                    <div class="custom-control">
+                        <label for="boardFrameColor">Board Frame</label>
+                        <input id="boardFrameColor" type="color" value="#7a5238">
+                    </div>
+
+                    <div class="custom-control">
+                        <label for="boardSizeRange">Board Size</label>
+                        <input id="boardSizeRange" type="range" min="320" max="560" step="10" value="500">
+                        <div id="boardSizeValue" class="size-readout">500px</div>
+                    </div>
+
+                    <div class="custom-control">
+                        <label>Preview</label>
+                        <div class="preview-chip" aria-hidden="true"></div>
+                    </div>
+
+                    <button id="resetBoardThemeBtn" class="reset-theme-btn">Reset Board Style</button>
+                </div>
+
+                <h4 class="customization-divider">Piece Customization</h4>
+                <p class="customization-intro">
+                    Change how the chess pieces look on puzzle, lesson, and computer boards too.
+                </p>
+
+                <div class="theme-preset-row">
+                    <button class="piece-theme-btn active" data-piece-theme="classic">Classic Pieces</button>
+                    <button class="piece-theme-btn" data-piece-theme="royal">Royal Gold</button>
+                    <button class="piece-theme-btn" data-piece-theme="pastel">Pastel Fun</button>
+                    <button class="piece-theme-btn" data-piece-theme="midnight">Midnight Glow</button>
+                </div>
+
+                <div class="customization-grid">
+                    <div class="custom-control">
+                        <label for="whitePieceColor">White Pieces</label>
+                        <input id="whitePieceColor" type="color" value="#ffffff">
+                    </div>
+
+                    <div class="custom-control">
+                        <label for="blackPieceColor">Black Pieces</label>
+                        <input id="blackPieceColor" type="color" value="#1f2a35">
+                    </div>
+
+                    <div class="custom-control">
+                        <label for="whitePieceBorderColor">White Piece Border</label>
+                        <input id="whitePieceBorderColor" type="color" value="#1f2f3f">
+                    </div>
+
+                    <div class="custom-control">
+                        <label for="blackPieceBorderColor">Black Piece Border</label>
+                        <input id="blackPieceBorderColor" type="color" value="#eef4ff">
+                    </div>
+
+                    <div class="custom-control">
+                        <label for="pieceSizeRange">Piece Size</label>
+                        <input id="pieceSizeRange" type="range" min="80" max="115" step="1" value="100">
+                        <div id="pieceSizeValue" class="size-readout">100%</div>
+                    </div>
+
+                    <div class="custom-control">
+                        <label for="pieceRadiusRange">Piece Roundness</label>
+                        <input id="pieceRadiusRange" type="range" min="10" max="50" step="2" value="50">
+                        <div id="pieceRadiusValue" class="size-readout">50%</div>
+                    </div>
+
+                    <div class="custom-control">
+                        <label>Preview</label>
+                        <div class="piece-preview-chip" aria-hidden="true">
+                            <div class="piece white-piece">♕</div>
+                            <div class="piece black-piece">♞</div>
+                        </div>
+                    </div>
+
+                    <button id="resetPieceThemeBtn" class="reset-theme-btn">Reset Piece Style</button>
+                </div>
             </div>
 
             <section id="puzzleSection" class="mode-section active">
@@ -895,7 +998,6 @@
     <script>
         const files = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
         const ranks = ['8', '7', '6', '5', '4', '3', '2', '1'];
-        const BOARD_STYLE_STORAGE_KEY = 'babyGeniusChessBoardStyle';
 
         const pieceMap = {
             wK: '♔', wQ: '♕', wR: '♖', wB: '♗', wN: '♘', wP: '♙',
@@ -1188,8 +1290,6 @@
         const puzzleSection = document.getElementById('puzzleSection');
         const learnSection = document.getElementById('learnSection');
         const playSection = document.getElementById('playSection');
-        const chessPageEl = document.querySelector('.chess-page');
-        const boardShellEls = document.querySelectorAll('.board-shell');
 
         const puzzleRankLabels = document.getElementById('puzzleRankLabels');
         const puzzleFileLabels = document.getElementById('puzzleFileLabels');
@@ -1232,120 +1332,98 @@
         const playSideButtons = document.querySelectorAll('.play-side-btn');
         const newGameBtn = document.getElementById('newGameBtn');
         const undoBtn = document.getElementById('undoBtn');
-        const boardThemeButtons = document.querySelectorAll('.board-theme-btn');
-        const lightSquareInput = document.getElementById('lightSquareInput');
-        const darkSquareInput = document.getElementById('darkSquareInput');
-        const frameColorInput = document.getElementById('frameColorInput');
-        const boardSizeInput = document.getElementById('boardSizeInput');
+        const themeButtons = document.querySelectorAll('.theme-btn');
+        const pieceThemeButtons = document.querySelectorAll('.piece-theme-btn');
+        const lightSquareColorInput = document.getElementById('lightSquareColor');
+        const darkSquareColorInput = document.getElementById('darkSquareColor');
+        const boardFrameColorInput = document.getElementById('boardFrameColor');
+        const boardSizeRangeInput = document.getElementById('boardSizeRange');
         const boardSizeValueEl = document.getElementById('boardSizeValue');
-        const showCoordsInput = document.getElementById('showCoordsInput');
-        const resetBoardStyleBtn = document.getElementById('resetBoardStyleBtn');
+        const resetBoardThemeBtn = document.getElementById('resetBoardThemeBtn');
+        const whitePieceColorInput = document.getElementById('whitePieceColor');
+        const blackPieceColorInput = document.getElementById('blackPieceColor');
+        const whitePieceBorderColorInput = document.getElementById('whitePieceBorderColor');
+        const blackPieceBorderColorInput = document.getElementById('blackPieceBorderColor');
+        const pieceSizeRangeInput = document.getElementById('pieceSizeRange');
+        const pieceRadiusRangeInput = document.getElementById('pieceRadiusRange');
+        const pieceSizeValueEl = document.getElementById('pieceSizeValue');
+        const pieceRadiusValueEl = document.getElementById('pieceRadiusValue');
+        const resetPieceThemeBtn = document.getElementById('resetPieceThemeBtn');
 
-        const defaultBoardStyle = Object.freeze({
-            lightSquare: '#f0d9b5',
-            darkSquare: '#b58863',
-            frameColor: '#7a5238',
-            baseSize: 500,
-            showCoordinates: true
-        });
-
-        const boardThemePresets = {
+        const boardThemes = {
             classic: {
-                lightSquare: '#f0d9b5',
-                darkSquare: '#b58863',
-                frameColor: '#7a5238'
-            },
-            ocean: {
-                lightSquare: '#d8f0ff',
-                darkSquare: '#5fa8d3',
-                frameColor: '#1f5f85'
-            },
-            forest: {
-                lightSquare: '#dfecc8',
-                darkSquare: '#6f9b57',
-                frameColor: '#42633a'
+                light: '#f0d9b5',
+                dark: '#b58863',
+                frame: '#7a5238',
+                size: 500
             },
             candy: {
-                lightSquare: '#ffe4ef',
-                darkSquare: '#ff8ab1',
-                frameColor: '#b95a82'
+                light: '#ffeef5',
+                dark: '#ff9fbf',
+                frame: '#d85f8f',
+                size: 500
+            },
+            ocean: {
+                light: '#dff6ff',
+                dark: '#62a9d7',
+                frame: '#246b97',
+                size: 500
+            },
+            forest: {
+                light: '#edf6df',
+                dark: '#79a85d',
+                frame: '#42633a',
+                size: 500
             }
         };
 
-        let boardStyle = loadBoardStyle();
-
-        function sanitizeHexColor(value, fallback) {
-            return typeof value === 'string' && /^#[0-9a-f]{6}$/i.test(value) ? value.toLowerCase() : fallback;
-        }
-
-        function clampBoardSize(value) {
-            const number = parseInt(value, 10);
-            if (Number.isNaN(number)) return defaultBoardStyle.baseSize;
-            return Math.min(620, Math.max(360, number));
-        }
-
-        function loadBoardStyle() {
-            try {
-                const savedStyle = JSON.parse(localStorage.getItem(BOARD_STYLE_STORAGE_KEY) || 'null');
-                if (!savedStyle) return { ...defaultBoardStyle };
-
-                return {
-                    lightSquare: sanitizeHexColor(savedStyle.lightSquare, defaultBoardStyle.lightSquare),
-                    darkSquare: sanitizeHexColor(savedStyle.darkSquare, defaultBoardStyle.darkSquare),
-                    frameColor: sanitizeHexColor(savedStyle.frameColor, defaultBoardStyle.frameColor),
-                    baseSize: clampBoardSize(savedStyle.baseSize),
-                    showCoordinates: typeof savedStyle.showCoordinates === 'boolean' ? savedStyle.showCoordinates : defaultBoardStyle.showCoordinates
-                };
-            } catch (error) {
-                return { ...defaultBoardStyle };
+        const defaultBoardThemeKey = 'classic';
+        const pieceThemes = {
+            classic: {
+                whiteFill: '#ffffff',
+                whiteText: '#1a2430',
+                whiteBorder: '#1f2f3f',
+                blackFill: '#1f2a35',
+                blackText: '#ffffff',
+                blackBorder: '#eef4ff',
+                scale: 100,
+                radius: 50
+            },
+            royal: {
+                whiteFill: '#fff3bf',
+                whiteText: '#5b4400',
+                whiteBorder: '#c79d15',
+                blackFill: '#4f3a7a',
+                blackText: '#fff6d5',
+                blackBorder: '#e8d28a',
+                scale: 102,
+                radius: 44
+            },
+            pastel: {
+                whiteFill: '#fff1fb',
+                whiteText: '#7a4069',
+                whiteBorder: '#e48bc2',
+                blackFill: '#9fcbff',
+                blackText: '#173b63',
+                blackBorder: '#ffffff',
+                scale: 104,
+                radius: 36
+            },
+            midnight: {
+                whiteFill: '#e8f3ff',
+                whiteText: '#163657',
+                whiteBorder: '#62a9d7',
+                blackFill: '#0f1b2b',
+                blackText: '#cde8ff',
+                blackBorder: '#6cb8ff',
+                scale: 98,
+                radius: 24
             }
-        }
-
-        function saveBoardStyle() {
-            try {
-                localStorage.setItem(BOARD_STYLE_STORAGE_KEY, JSON.stringify(boardStyle));
-            } catch (error) {
-                // Ignore storage failures and keep the board usable.
-            }
-        }
-
-        function getActiveBoardTheme() {
-            const activeTheme = Object.entries(boardThemePresets).find(([, preset]) =>
-                preset.lightSquare === boardStyle.lightSquare &&
-                preset.darkSquare === boardStyle.darkSquare &&
-                preset.frameColor === boardStyle.frameColor
-            );
-
-            return activeTheme ? activeTheme[0] : null;
-        }
-
-        function updateBoardThemeButtons() {
-            const activeTheme = getActiveBoardTheme();
-            boardThemeButtons.forEach(button => {
-                button.classList.toggle('active', button.dataset.theme === activeTheme);
-            });
-        }
-
-        function applyBoardStyle() {
-            chessPageEl.style.setProperty('--boardBaseSize', `${boardStyle.baseSize}px`);
-            chessPageEl.style.setProperty('--boardLight', boardStyle.lightSquare);
-            chessPageEl.style.setProperty('--boardDark', boardStyle.darkSquare);
-            chessPageEl.style.setProperty('--boardFrame', boardStyle.frameColor);
-
-            lightSquareInput.value = boardStyle.lightSquare;
-            darkSquareInput.value = boardStyle.darkSquare;
-            frameColorInput.value = boardStyle.frameColor;
-            boardSizeInput.value = String(boardStyle.baseSize);
-            boardSizeValueEl.textContent = `${boardStyle.baseSize}px`;
-            showCoordsInput.checked = boardStyle.showCoordinates;
-
-            boardShellEls.forEach(boardShell => {
-                boardShell.classList.toggle('coordinates-hidden', !boardStyle.showCoordinates);
-            });
-
-            updateBoardThemeButtons();
-            saveBoardStyle();
-        }
+        };
+        const defaultPieceThemeKey = 'classic';
+        const boardCustomizationStorageKey = 'baby-genius-board-style';
+        let boardStyle = { ...boardThemes[defaultBoardThemeKey], theme: defaultBoardThemeKey };
+        let pieceStyle = { ...pieceThemes[defaultPieceThemeKey], theme: defaultPieceThemeKey };
 
         function squareToCoords(square) {
             return {
@@ -1393,6 +1471,134 @@
                 fileDiv.textContent = file;
                 fileContainer.appendChild(fileDiv);
             });
+        }
+
+        function syncBoardControls() {
+            lightSquareColorInput.value = boardStyle.light;
+            darkSquareColorInput.value = boardStyle.dark;
+            boardFrameColorInput.value = boardStyle.frame;
+            boardSizeRangeInput.value = String(boardStyle.size);
+            boardSizeValueEl.textContent = `${boardStyle.size}px`;
+
+            themeButtons.forEach(button => {
+                button.classList.toggle('active', button.dataset.theme === boardStyle.theme);
+            });
+        }
+
+        function syncPieceControls() {
+            whitePieceColorInput.value = pieceStyle.whiteFill;
+            blackPieceColorInput.value = pieceStyle.blackFill;
+            whitePieceBorderColorInput.value = pieceStyle.whiteBorder;
+            blackPieceBorderColorInput.value = pieceStyle.blackBorder;
+            pieceSizeRangeInput.value = String(pieceStyle.scale);
+            pieceRadiusRangeInput.value = String(pieceStyle.radius);
+            pieceSizeValueEl.textContent = `${pieceStyle.scale}%`;
+            pieceRadiusValueEl.textContent = `${pieceStyle.radius}%`;
+
+            pieceThemeButtons.forEach(button => {
+                button.classList.toggle('active', button.dataset.pieceTheme === pieceStyle.theme);
+            });
+        }
+
+        function saveBoardCustomization() {
+            try {
+                localStorage.setItem(boardCustomizationStorageKey, JSON.stringify({
+                    ...boardStyle,
+                    whiteFill: pieceStyle.whiteFill,
+                    whiteText: pieceStyle.whiteText,
+                    whiteBorder: pieceStyle.whiteBorder,
+                    blackFill: pieceStyle.blackFill,
+                    blackText: pieceStyle.blackText,
+                    blackBorder: pieceStyle.blackBorder,
+                    scale: pieceStyle.scale,
+                    radius: pieceStyle.radius,
+                    pieceTheme: pieceStyle.theme
+                }));
+            } catch (error) {
+                console.warn('Could not save board customization.', error);
+            }
+        }
+
+        function redrawAllBoards() {
+            drawReferenceBoard();
+            drawPuzzleBoard();
+            drawLearnBoard();
+            drawPlayBoard();
+        }
+
+        function applyBoardCustomization(shouldPersist = true) {
+            document.documentElement.style.setProperty('--board-light', boardStyle.light);
+            document.documentElement.style.setProperty('--board-dark', boardStyle.dark);
+            document.documentElement.style.setProperty('--board-frame', boardStyle.frame);
+            document.documentElement.style.setProperty('--board-label', boardStyle.frame);
+            document.documentElement.style.setProperty('--board-max-size', `${boardStyle.size}px`);
+
+            syncBoardControls();
+            redrawAllBoards();
+
+            if (shouldPersist) {
+                saveBoardCustomization();
+            }
+        }
+
+        function applyPieceCustomization(shouldPersist = true) {
+            document.documentElement.style.setProperty('--white-piece-fill', pieceStyle.whiteFill);
+            document.documentElement.style.setProperty('--white-piece-text', pieceStyle.whiteText);
+            document.documentElement.style.setProperty('--white-piece-border', pieceStyle.whiteBorder);
+            document.documentElement.style.setProperty('--black-piece-fill', pieceStyle.blackFill);
+            document.documentElement.style.setProperty('--black-piece-text', pieceStyle.blackText);
+            document.documentElement.style.setProperty('--black-piece-border', pieceStyle.blackBorder);
+            document.documentElement.style.setProperty('--piece-scale', String(pieceStyle.scale / 100));
+            document.documentElement.style.setProperty('--piece-radius', `${pieceStyle.radius}%`);
+
+            syncPieceControls();
+            redrawAllBoards();
+
+            if (shouldPersist) {
+                saveBoardCustomization();
+            }
+        }
+
+        function setBoardTheme(themeKey) {
+            if (!boardThemes[themeKey]) return;
+            boardStyle = { ...boardThemes[themeKey], theme: themeKey };
+            applyBoardCustomization();
+        }
+
+        function setPieceTheme(themeKey) {
+            if (!pieceThemes[themeKey]) return;
+            pieceStyle = { ...pieceThemes[themeKey], theme: themeKey };
+            applyPieceCustomization();
+        }
+
+        function loadSavedBoardCustomization() {
+            try {
+                const saved = JSON.parse(localStorage.getItem(boardCustomizationStorageKey) || 'null');
+                if (!saved) return;
+
+                boardStyle = {
+                    light: saved.light || boardThemes[defaultBoardThemeKey].light,
+                    dark: saved.dark || boardThemes[defaultBoardThemeKey].dark,
+                    frame: saved.frame || boardThemes[defaultBoardThemeKey].frame,
+                    size: Number(saved.size) || boardThemes[defaultBoardThemeKey].size,
+                    theme: saved.theme && boardThemes[saved.theme] ? saved.theme : 'custom'
+                };
+
+                pieceStyle = {
+                    whiteFill: saved.whiteFill || pieceThemes[defaultPieceThemeKey].whiteFill,
+                    whiteText: saved.whiteText || pieceThemes[defaultPieceThemeKey].whiteText,
+                    whiteBorder: saved.whiteBorder || pieceThemes[defaultPieceThemeKey].whiteBorder,
+                    blackFill: saved.blackFill || pieceThemes[defaultPieceThemeKey].blackFill,
+                    blackText: saved.blackText || pieceThemes[defaultPieceThemeKey].blackText,
+                    blackBorder: saved.blackBorder || pieceThemes[defaultPieceThemeKey].blackBorder,
+                    scale: Number(saved.scale) || pieceThemes[defaultPieceThemeKey].scale,
+                    radius: Number(saved.radius) || pieceThemes[defaultPieceThemeKey].radius,
+                    theme: saved.pieceTheme && pieceThemes[saved.pieceTheme] ? saved.pieceTheme : 'custom'
+                };
+            } catch (error) {
+                boardStyle = { ...boardThemes[defaultBoardThemeKey], theme: defaultBoardThemeKey };
+                pieceStyle = { ...pieceThemes[defaultPieceThemeKey], theme: defaultPieceThemeKey };
+            }
         }
 
         function drawReferenceBoard() {
@@ -2345,67 +2551,102 @@
             });
         });
 
-        newGameBtn.addEventListener('click', startNewPlayGame);
-        undoBtn.addEventListener('click', undoLastTurn);
-
-        boardThemeButtons.forEach(button => {
+        themeButtons.forEach(button => {
             button.addEventListener('click', () => {
-                const preset = boardThemePresets[button.dataset.theme];
-                if (!preset) return;
-
-                boardStyle = {
-                    ...boardStyle,
-                    lightSquare: preset.lightSquare,
-                    darkSquare: preset.darkSquare,
-                    frameColor: preset.frameColor
-                };
-                applyBoardStyle();
+                setBoardTheme(button.dataset.theme);
             });
         });
 
-        lightSquareInput.addEventListener('input', () => {
-            boardStyle.lightSquare = sanitizeHexColor(lightSquareInput.value, defaultBoardStyle.lightSquare);
-            applyBoardStyle();
+        pieceThemeButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                setPieceTheme(button.dataset.pieceTheme);
+            });
         });
 
-        darkSquareInput.addEventListener('input', () => {
-            boardStyle.darkSquare = sanitizeHexColor(darkSquareInput.value, defaultBoardStyle.darkSquare);
-            applyBoardStyle();
+        lightSquareColorInput.addEventListener('input', () => {
+            boardStyle.light = lightSquareColorInput.value;
+            boardStyle.theme = 'custom';
+            applyBoardCustomization();
         });
 
-        frameColorInput.addEventListener('input', () => {
-            boardStyle.frameColor = sanitizeHexColor(frameColorInput.value, defaultBoardStyle.frameColor);
-            applyBoardStyle();
+        darkSquareColorInput.addEventListener('input', () => {
+            boardStyle.dark = darkSquareColorInput.value;
+            boardStyle.theme = 'custom';
+            applyBoardCustomization();
         });
 
-        boardSizeInput.addEventListener('input', () => {
-            boardStyle.baseSize = clampBoardSize(boardSizeInput.value);
-            applyBoardStyle();
+        boardFrameColorInput.addEventListener('input', () => {
+            boardStyle.frame = boardFrameColorInput.value;
+            boardStyle.theme = 'custom';
+            applyBoardCustomization();
         });
 
-        showCoordsInput.addEventListener('change', () => {
-            boardStyle.showCoordinates = showCoordsInput.checked;
-            applyBoardStyle();
+        boardSizeRangeInput.addEventListener('input', () => {
+            boardStyle.size = Number(boardSizeRangeInput.value);
+            boardStyle.theme = boardStyle.theme || 'custom';
+            applyBoardCustomization();
         });
 
-        resetBoardStyleBtn.addEventListener('click', () => {
-            boardStyle = { ...defaultBoardStyle };
-            applyBoardStyle();
+        whitePieceColorInput.addEventListener('input', () => {
+            pieceStyle.whiteFill = whitePieceColorInput.value;
+            pieceStyle.theme = 'custom';
+            applyPieceCustomization();
         });
+
+        blackPieceColorInput.addEventListener('input', () => {
+            pieceStyle.blackFill = blackPieceColorInput.value;
+            pieceStyle.theme = 'custom';
+            applyPieceCustomization();
+        });
+
+        whitePieceBorderColorInput.addEventListener('input', () => {
+            pieceStyle.whiteBorder = whitePieceBorderColorInput.value;
+            pieceStyle.theme = 'custom';
+            applyPieceCustomization();
+        });
+
+        blackPieceBorderColorInput.addEventListener('input', () => {
+            pieceStyle.blackBorder = blackPieceBorderColorInput.value;
+            pieceStyle.theme = 'custom';
+            applyPieceCustomization();
+        });
+
+        pieceSizeRangeInput.addEventListener('input', () => {
+            pieceStyle.scale = Number(pieceSizeRangeInput.value);
+            pieceStyle.theme = 'custom';
+            applyPieceCustomization();
+        });
+
+        pieceRadiusRangeInput.addEventListener('input', () => {
+            pieceStyle.radius = Number(pieceRadiusRangeInput.value);
+            pieceStyle.theme = 'custom';
+            applyPieceCustomization();
+        });
+
+        resetBoardThemeBtn.addEventListener('click', () => {
+            setBoardTheme(defaultBoardThemeKey);
+        });
+
+        resetPieceThemeBtn.addEventListener('click', () => {
+            setPieceTheme(defaultPieceThemeKey);
+        });
+
+        newGameBtn.addEventListener('click', startNewPlayGame);
+        undoBtn.addEventListener('click', undoLastTurn);
 
         puzzleModeBtn.addEventListener('click', () => showMode('puzzle'));
         learnModeBtn.addEventListener('click', () => showMode('learn'));
         playModeBtn.addEventListener('click', () => showMode('play'));
 
-        applyBoardStyle();
+        loadSavedBoardCustomization();
+        applyBoardCustomization(false);
+        applyPieceCustomization(false);
         populateBoardLabels(puzzleRankLabels, puzzleFileLabels);
         populateBoardLabels(learnRankLabels, learnFileLabels);
-        drawReferenceBoard();
         loadPuzzle();
         loadLesson();
         updatePlayButtons();
         updatePlayLabels();
-        drawPlayBoard();
 
         if (typeof Chess === 'undefined') {
             setPlayStatus('Play mode could not load chess.js. Reload with internet access.', 'bad');
